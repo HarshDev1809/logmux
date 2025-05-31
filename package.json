@@ -21,5 +21,8 @@
   "bugs": {
     "url": "https://github.com/HarshDev1809/logmux/issues"
   },
-  "homepage": "https://github.com/HarshDev1809/logmux#readme"
+  "homepage": "https://github.com/HarshDev1809/logmux#readme",
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
 }
