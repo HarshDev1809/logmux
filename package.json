@@ -2,13 +2,24 @@
   "name": "logmux",
   "version": "1.0.1",
   "description": "A logger multiplexer",
-  "main": "src/index.js",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/cjs/index.cjs",
+  "exports": {
+    "import": "./dist/index.js",
+    "require": "./dist/cjs/index.cjs"
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsup",
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/HarshDev1809/logmux.git"
+    "url": "https://github.com/HarshDev1809/logmux.git"
   },
   "keywords": [
     "console",
@@ -23,6 +34,8 @@
   },
   "homepage": "https://github.com/HarshDev1809/logmux#readme",
   "devDependencies": {
+    "@types/node": "^22.15.29",
+    "tsup": "^8.5.0",
     "typescript": "^5.8.3"
   }
 }

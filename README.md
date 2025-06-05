@@ -1,15 +1,17 @@
 # LogMux
 
-LogMux is a lightweight, customizable logging utility for Node.js applications. It provides a simple and flexible way to log messages with timestamps, labels, and color-coded output. LogMux supports logging to both the console and files, with configurable options for colors, timestamp formats, and label styling.
+A flexible and customizable logging utility for Node.js applications, supporting both ESM and CommonJS modules, with TypeScript support. LogMux provides a simple way to log messages with customizable colors, timestamps, labels, and file logging capabilities.
 
 ## Features
 
-- **Color-coded Logs**: Customize log colors for different log types (Info, Error, Warning).
-- **Timestamp Support**: Add timestamps in Unix or ISO format.
-- **Label Customization**: Include or exclude labels, with optional uppercase formatting.
-- **File Logging**: Optionally log messages to a file.
-- **Object Serialization**: Automatically serialize objects to JSON for clean output.
-- **Extensible Configuration**: Easily configure logging behavior through a simple options object.
+- **Customizable Logging**: Configure log colors, timestamps, and labels.
+- **Multiple Log Types**: Supports standard logs (`Log`), error logs (`ErrorLog`), and warning logs (`WarnLog`).
+- **Timestamp Formats**: Choose between Unix timestamp or ISO format.
+- **File Logging**: Optionally save logs to a file.
+- **Color Support**: ANSI color codes for console output.
+- **TypeScript Support**: Fully typed with TypeScript definitions.
+- **Dual Module Support**: Compatible with both ESM and CommonJS.
+- **Configurable Labels**: Include or exclude labels, with optional uppercase formatting.
 
 ## Installation
 
@@ -21,111 +23,155 @@ npm install logmux
 
 ## Usage
 
-Here's how to get started with LogMux in your Node.js project:
+### Importing LogMux
+
+#### ESM
+```javascript
+import LogMux from 'logmux';
+```
+
+#### CommonJS
+```javascript
+const LogMux = require('logmux');
+```
 
 ### Basic Example
 
 ```javascript
-const { LogMux } = require('logmux');
-
 const logger = new LogMux({
-  errorColor: 'red',
-  textColor: 'green',
+  textColour: 'blue',
+  errorColour: 'red',
+  warnColour: 'yellow',
+  includeLabel: true,
+  includeTimeStamp: true,
   timeStampFormat: 'iso',
   recordFile: true,
-  uppercaseLabel: true
+  uppercaseLabel: true,
 });
 
-logger.Log('This is an info message');
-logger.ErrorLog('This is an error message');
-logger.WarnLog('This is a warning message');
+// Standard log
+await logger.Log('This is an info message');
+
+// Error log
+await logger.ErrorLog('This is an error message');
+
+// Warning log
+await logger.WarnLog('This is a warning message');
 ```
 
-### Example Output
+### Configuration Options
 
-Console output (with colors applied):
-```
-2025-05-31T18:04:00.000Z [INFO] - This is an info message
-2025-05-31T18:04:00.000Z [ERROR] - This is an error message
-2025-05-31T18:04:00.000Z [WARNING] - This is a warning message
-```
+When creating a `LogMux` instance, you can pass a configuration object with the following properties:
 
-File output (in `logs.txt`):
-```
-2025-05-31T18:04:00.000Z [INFO] - This is an info message
-2025-05-31T18:04:00.000Z [ERROR] - This is an error message
-2025-05-31T18:04:00.000Z [WARNING] - This is a warning message
-```
+| Option              | Type      | Default       | Description                                                                 |
+|---------------------|-----------|---------------|-----------------------------------------------------------------------------|
+| `textColour`        | `string`  | `'white'`     | ANSI color for standard logs (e.g., `'blue'`, `'green'`).                   |
+| `errorColour`       | `string`  | `'red'`       | ANSI color for error logs.                                                  |
+| `warnColour`        | `string`  | `'yellow'`    | ANSI color for warning logs.                                                |
+| `includeLabel`      | `boolean` | `true`        | Include a label (e.g., `[INFO]`, `[ERROR]`) in the log.                     |
+| `includeTimeStamp`  | `boolean` | `true`        | Include a timestamp in the log.                                             |
+| `timeStampFormat`   | `string`  | `'unix'`      | Timestamp format: `'unix'` (milliseconds) or `'iso'` (ISO 8601).            |
+| `recordFile`        | `boolean` | `false`       | Save logs to a file (`logs.txt` by default).                                |
+| `uppercaseLabel`    | `boolean` | `false`       | Convert labels to uppercase (e.g., `[INFO]` instead of `[info]`).           |
 
-### Advanced Example
+### Example with Custom Configuration
 
 ```javascript
-const { LogMux } = require('logmux');
-
 const logger = new LogMux({
+  textColour: 'cyan',
   timeStampFormat: 'unix',
-  includeLabel: true,
-  uppercaseLabel: false,
   recordFile: true,
-  textColor: 'cyan',
-  errorColor: 'brightRed',
+  uppercaseLabel: true,
 });
 
-// Logging an object
-logger.Log({ user: 'John', action: 'login' }, 'AUTH');
-
-// Logging an error with a custom label
-logger.ErrorLog('Failed to connect to database', 'DB_ERROR');
+await logger.Log('Custom log message', 'CUSTOM');
+// Output: 1746654321000 [CUSTOM] - Custom log message (in cyan)
+await logger.ErrorLog('Something went wrong');
+// Output: 1746654321000 [ERROR] - Something went wrong (in red)
 ```
 
-### Example Output
+### TypeScript Usage
 
-Console output:
+LogMux is fully typed and works seamlessly with TypeScript. Here's an example:
+
+```typescript
+import LogMux from 'logmux';
+
+const logger = new LogMux({
+  textColour: 'green',
+  timeStampFormat: 'iso',
+  recordFile: true,
+});
+
+async function main() {
+  await logger.Log('Hello, TypeScript!', 'INFO');
+  await logger.WarnLog({ warning: 'Low battery' }, 'BATTERY');
+  await logger.ErrorLog(new Error('Critical failure'), 'CRITICAL');
+}
+
+main();
 ```
-1625060640000 [auth] - {"user":"John","action":"login"}
-1625060640000 [DB_ERROR] - Failed to connect to database
+
+### File Logging
+
+When `recordFile` is set to `true`, logs are saved to `logs.txt` in the project directory. You can customize the file path by modifying the `logToFile` function in `src/utils.ts` if needed.
+
+## API
+
+### `LogMux` Class
+
+#### Constructor
+```javascript
+const logger = new LogMux(config);
 ```
 
-## Configuration Options
+#### Methods
+- **`Log(message: any, label?: string): Promise<void>`**
+  Logs a standard message with optional custom label.
+- **`ErrorLog(message: any, label?: string): Promise<void>`**
+  Logs an error message with optional custom label.
+- **`WarnLog(message: any, label?: string): Promise<void>`**
+  Logs a warning message with optional custom label.
 
-When creating a `LogMux` instance, you can pass a configuration object with the following options:
+## Supported Colors
 
-| Option              | Type    | Default Value         | Description                                                                 |
-|---------------------|---------|-----------------------|-----------------------------------------------------------------------------|
-| `errorColor`        | String  | `red`                 | Color for error logs (from `TEXT_COLOURS`).                                 |
-| `textColor`         | String  | `white`               | Color for info logs (from `TEXT_COLOURS`).                                  |
-| `warnColor`         | String  | `yellow`              | Color for warning logs (from `TEXT_COLOURS`).                               |
-| `includeLabel`      | Boolean | `true`                | Whether to include labels in logs.                                          |
-| `includeTimeStamp`  | Boolean | `true`                | Whether to include timestamps in logs.                                      |
-| `timeStampFormat`   | String  | `unix`                | Timestamp format (`unix` for milliseconds, `iso` for ISO 8601).             |
-| `recordFile`        | Boolean | `false`               | Whether to log messages to a file (`logs.txt` by default).                  |
-| `uppercaseLabel`    | Boolean | `false`               | Whether to convert labels to uppercase.                                     |
-
-### Available Colors
-
-LogMux uses ANSI color codes from the `TEXT_COLOURS` constant. Available colors include:
+LogMux supports the following ANSI colors for console output:
 
 - `black`, `red`, `green`, `yellow`, `blue`, `magenta`, `cyan`, `white`
 - `brightBlack`, `brightRed`, `brightGreen`, `brightYellow`, `brightBlue`, `brightMagenta`, `brightCyan`, `brightWhite`
 
-## Methods
+## Development
 
-- **Log(message, label = "INFO")**: Logs an info message with the specified label.
-- **ErrorLog(message, label = "ERROR")**: Logs an error message with the specified label.
-- **WarnLog(message, label = "WARNING")**: Logs a warning message with the specified label.
+To contribute to LogMux or build it locally:
 
-## Dependencies
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/HarshDev1809/logmux.git
+   ```
 
-- Node.js built-in modules: `fs`, `path`
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-## File Logging
+3. Build the project:
+   ```bash
+   npm run build
+   ```
 
-When `recordFile` is set to `true`, logs are written to `logs.txt` in the project directory. The directory is automatically created if it doesn't exist. Ensure proper write permissions for the directory.
-
-## Contributing
-
-Contributions are welcome! Please submit issues or pull requests to the [GitHub repository](https://github.com/your-repo/logmux).
+4. Run tests (if available):
+   ```bash
+   npm test
+   ```
 
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Contributing
+
+Contributions are welcome! Please submit a pull request or open an issue on the [GitHub repository](https://github.com/HarshDev1809/logmux.git) for bug reports, feature requests, or suggestions.
+
+## Contact
+
+For questions or support, please open an issue on the [GitHub repository](https://github.com/HarshDev1809/logmux.git) or contact the maintainers.

@@ -1,4 +1,8 @@
-export const TEXT_COLOURS = {
+export interface ColourMap {
+  [key : string] : string;
+}
+
+export const TEXT_COLOURS: ColourMap = {
   black: "\x1b[30m",
   red: "\x1b[31m",
   green: "\x1b[32m",
@@ -18,7 +22,7 @@ export const TEXT_COLOURS = {
   brightWhite: "\x1b[97m",
 } as const;
 
-export const BACKGROUND_COLOURS = {
+export const BACKGROUND_COLOURS: ColourMap = {
   bgBlack: "\x1b[40m",
   bgRed: "\x1b[41m",
   bgGreen: "\x1b[42m",
@@ -38,7 +42,7 @@ export const BACKGROUND_COLOURS = {
   bgBrightWhite: "\x1b[107m",
 } as const;
 
-export const TEXT_STYLES = {
+export const TEXT_STYLES: ColourMap = {
   reset: "\x1b[0m",
   bold: "\x1b[1m",
   dim: "\x1b[2m",
